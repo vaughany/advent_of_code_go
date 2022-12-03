@@ -42,6 +42,24 @@ func (cfg *config) run2022() {
 		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
 		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
 	}
+
+	if cfg.day == 3 || cfg.day == 0 {
+		cfg.title(2022, 3)
+		timingStart := time.Now()
+		instructions := cfg.getInputAsStrings(2022, 3)
+		cfg.timeInfo(InfoTypeSetup, time.Since(timingStart))
+
+		timingPartOne := time.Now()
+		cfg.answerPart1(cfg.year2022day03part1(instructions))
+		cfg.timeInfo(InfoTypeOne, time.Since(timingPartOne))
+
+		timingPartTwo := time.Now()
+		cfg.answerPart2(cfg.year2022day03part2(instructions))
+		cfg.timeInfo(InfoTypeTwo, time.Since(timingPartTwo))
+
+		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
+		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
+	}
 }
 
 // 2022-01-1: 70369
@@ -227,4 +245,62 @@ func (cfg *config) year2022day02part2(instructions []string) int {
 	}
 
 	return totalScore
+}
+
+// 2022-03-1: 8018
+func (cfg *config) year2022day03part1(instructions []string) int {
+	var score int
+
+	for _, ins := range instructions {
+		half1, half2 := ins[:len(ins)/2], ins[len(ins)/2:]
+
+		for _, letter := range half1 {
+			if strings.Contains(half2, string(letter)) {
+				asciiOfRune := int(letter)
+				if asciiOfRune >= 97 && asciiOfRune <= 122 {
+					score += asciiOfRune - 96
+				} else if asciiOfRune >= 65 && asciiOfRune <= 90 {
+					score += asciiOfRune - 38
+				}
+				break
+			}
+		}
+	}
+
+	return score
+}
+
+// 2022-03-2: 2518
+func (cfg *config) year2022day03part2(instructions []string) int {
+	var (
+		elfGroup   = make([]string, 3)
+		elfInGroup int
+		score      int
+	)
+
+	for _, ins := range instructions {
+		elfGroup[elfInGroup] = ins
+
+		elfInGroup++
+		if elfInGroup == 3 {
+			elfInGroup = 0
+
+			for _, letter := range elfGroup[0] {
+				if strings.Contains(elfGroup[1], string(letter)) {
+					if strings.Contains(elfGroup[2], string(letter)) {
+						asciiOfRune := int(letter)
+						if asciiOfRune >= 97 && asciiOfRune <= 122 {
+							score += asciiOfRune - 96
+						} else if asciiOfRune >= 65 && asciiOfRune <= 90 {
+							score += asciiOfRune - 38
+						}
+
+						break
+					}
+				}
+			}
+		}
+	}
+
+	return score
 }
