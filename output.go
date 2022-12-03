@@ -17,6 +17,11 @@ const (
 )
 
 func (cfg *config) title(year, day int) {
+	if day == 0 {
+		sendToLog(cfg.colours.title, fmt.Sprintf("Advent of Code %d.", year))
+		return
+	}
+
 	sendToLog(cfg.colours.title, fmt.Sprintf("Advent of Code %d, Day %d.", year, day))
 }
 
