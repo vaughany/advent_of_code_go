@@ -18,11 +18,11 @@ const (
 
 func (cfg *config) title(year, day int) {
 	if day == 0 {
-		sendToLog(cfg.colours.title, fmt.Sprintf("Advent of Code %d.", year))
+		sendToLog(cfg.colours.title, fmt.Sprintf("\nAdvent of Code %d.", year))
 		return
 	}
 
-	sendToLog(cfg.colours.title, fmt.Sprintf("Advent of Code %d, Day %d.", year, day))
+	sendToLog(cfg.colours.title, fmt.Sprintf("\nAdvent of Code %d, Day %d.", year, day))
 }
 
 func (cfg *config) answerPart1(output int) {
