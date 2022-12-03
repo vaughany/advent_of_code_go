@@ -2,6 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -15,6 +19,8 @@ type config struct {
 	colours struct {
 		title, info, timing, reset string
 	}
+	getInput      bool
+	sessionCookie string
 	// allDays bool
 }
 
@@ -27,11 +33,67 @@ func main() {
 	// cfg.colours.reset = "\u001b[0m"
 
 	flag.BoolVar(&cfg.debug, "d", cfg.debug, "Display debugging information")
-	flag.BoolVar(&cfg.sample, "s", cfg.sample, "Use the sample input data")
+	flag.BoolVar(&cfg.sample, "s", cfg.sample, "Use the sample input file")
 	flag.BoolVar(&cfg.timing, "t", cfg.timing, "Display timing information")
-	flag.IntVar(&cfg.year, "year", cfg.year, "Run just this day")
+	flag.IntVar(&cfg.year, "year", cfg.year, "Run just this year")
 	flag.IntVar(&cfg.day, "day", cfg.day, "Run just this day")
+	flag.BoolVar(&cfg.getInput, "get-today", cfg.getInput, "fetches today's input (requires -session)")
+	flag.StringVar(&cfg.sessionCookie, "session", cfg.sessionCookie, "AoC session Cookie")
 	flag.Parse()
+
+	if cfg.getInput && len(cfg.sessionCookie) != 128 {
+		fmt.Println("Sorry, a session cookie (128 chars) is required to use the -get-input function.")
+		os.Exit(1)
+	}
+
+	if cfg.getInput && len(cfg.sessionCookie) == 128 {
+		// Run with go run . -get-today -session=aoc-session-cookie-goes-here
+
+		cfg.title(time.Now().Year(), 0)
+
+		client := &http.Client{}
+
+		now := time.Now()
+		url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", now.Year(), now.Day())
+		fmt.Printf("Fetching %s...\n", url)
+
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			panic(err)
+		}
+
+		cookie := &http.Cookie{
+			Name:  "session",
+			Value: cfg.sessionCookie,
+		}
+		req.AddCookie(cookie)
+
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Printf("Expected 200 OK, received %d %s.\n", resp.StatusCode, http.StatusText(resp.StatusCode))
+			os.Exit(1)
+		}
+
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+
+		filename := fmt.Sprintf("inputs/%d/%.2d.txt", now.Year(), now.Day())
+		err = os.WriteFile(filename, bodyBytes[:len(bodyBytes)-1], 0644) // 0600
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("%d bytes writtern to %s.\n", len(bodyBytes), filename)
+
+		os.Exit(0)
+	}
 
 	// if cfg.day == 0 {
 	// 	cfg.allDays = true
