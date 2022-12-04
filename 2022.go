@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -56,6 +58,21 @@ func (cfg *config) run2022() {
 		timingPartTwo := time.Now()
 		cfg.answerPart2(cfg.year2022day03part2(instructions))
 		cfg.timeInfo(InfoTypeTwo, time.Since(timingPartTwo))
+
+		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
+		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
+	}
+
+	if cfg.day == 4 || cfg.day == 0 {
+		cfg.title(2022, 4)
+		timingStart := time.Now()
+		instructions := cfg.getInputAsStrings(2022, 4)
+		cfg.timeInfo(InfoTypeSetup, time.Since(timingStart))
+
+		timingPartOne := time.Now()
+		pt1, pt2 := cfg.year2022day04(instructions)
+		cfg.answerPart1(pt1)
+		cfg.answerPart2(pt2)
 
 		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
 		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
@@ -303,4 +320,39 @@ func (cfg *config) year2022day03part2(instructions []string) int {
 	}
 
 	return score
+}
+
+// 2022-04-1: 573
+// 2022-04-2: 867
+func (cfg *config) year2022day04(instructions []string) (int, int) {
+	var (
+		contained, overlapping int
+		s1s, s1e, s2s, s2e     int
+	)
+
+	for _, ins := range instructions {
+		sections := strings.Split(ins, ",")
+
+		s1 := strings.Split(sections[0], "-")
+		s2 := strings.Split(sections[1], "-")
+
+		s1s, _ = strconv.Atoi(s1[0])
+		s1e, _ = strconv.Atoi(s1[1])
+		s2s, _ = strconv.Atoi(s2[0])
+		s2e, _ = strconv.Atoi(s2[1])
+
+		if cfg.debug {
+			fmt.Println(s1s, s1e, s2s, s2e)
+		}
+
+		if s1s <= s2s && s1e >= s2e || s2s <= s1s && s2e >= s1e {
+			contained++
+		}
+
+		if (s1s >= s2s && s1s <= s2e || s1e >= s2s && s1e <= s2e) || (s1s <= s2s && s1e >= s2e || s2s <= s1s && s2e >= s1e) {
+			overlapping++
+		}
+	}
+
+	return contained, overlapping
 }
