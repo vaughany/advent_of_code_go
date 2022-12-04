@@ -17,7 +17,7 @@ type config struct {
 		finished time.Time
 	}
 	colours struct {
-		title, info, timing, reset string
+		title, info, timing, reset, nyi string
 	}
 	getInput      bool
 	sessionCookie string
@@ -30,6 +30,7 @@ func main() {
 	cfg.colours.title = "\u001b[32m"
 	cfg.colours.info = "\u001b[33m"
 	cfg.colours.timing = "\u001b[36m"
+	cfg.colours.nyi = "\u001b[90m"
 	// cfg.colours.reset = "\u001b[0m"
 
 	flag.BoolVar(&cfg.debug, "d", cfg.debug, "Display debugging information")

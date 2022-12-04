@@ -41,6 +41,10 @@ func (cfg *config) info(text string) {
 	sendToLog(cfg.colours.info, text)
 }
 
+func (cfg *config) notYetImplemented() {
+	sendToLog(cfg.colours.nyi, "Not yet implemented")
+}
+
 func (cfg *config) timeInfo(timeType TimeInfoType, timeDuration time.Duration) {
 	if !cfg.timing {
 		return
