@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"vaughany.com/advent_of_code_go/inputs"
 )
 
 // GetFilename creates the path and filename based on day and real / sample data.
@@ -14,14 +16,16 @@ func (cfg *config) getFilename(year, day int) string {
 		suffix = "-sample"
 	}
 
-	return fmt.Sprintf("inputs/%d/%02d%s.txt", year, day, suffix)
+	// return fmt.Sprintf("inputs/%d/%02d%s.txt", year, day, suffix)
+	return fmt.Sprintf("%d/%02d%s.txt", year, day, suffix)
 }
 
 // Read a file with many lines and return an array (of strings).
 func loadFile(filename string) []string {
 	var lines []string
 
-	file, err := os.Open(filename)
+	// file, err := os.Open(filename)
+	file, err := inputs.EmbeddedFiles.Open(filename)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -32,6 +36,7 @@ func loadFile(filename string) []string {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
+
 	if len(lines) < 1 {
 		fmt.Printf("Input file '%s' has no lines.\n", filename)
 		os.Exit(1)
