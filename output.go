@@ -25,16 +25,16 @@ func (cfg *config) title(year, day int) {
 	sendToLog(cfg.colours.title, fmt.Sprintf("\nAdvent of Code %d, Day %d.", year, day))
 }
 
-func (cfg *config) answerPart1(output int) {
+func (cfg *config) answerPart1(output any) {
 	answer("One", output)
 }
 
-func (cfg *config) answerPart2(output int) {
+func (cfg *config) answerPart2(output any) {
 	answer("Two", output)
 }
 
-func answer(part string, output int) {
-	fmt.Printf("Part %s: %d\n", part, output)
+func answer(part string, output any) {
+	fmt.Printf("Part %s: %v\n", part, output)
 }
 
 func (cfg *config) info(text string) {
