@@ -95,6 +95,24 @@ func (cfg *config) run2022() {
 		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
 		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
 	}
+
+	if cfg.day == 6 || cfg.day == 0 {
+		cfg.title(2022, 6)
+		timingStart := time.Now()
+		instructions := cfg.getInputAsString(2022, 6)
+		cfg.timeInfo(InfoTypeSetup, time.Since(timingStart))
+
+		timingPartOne := time.Now()
+		cfg.answerPart1(cfg.year2022day06part1(instructions))
+		cfg.timeInfo(InfoTypeOne, time.Since(timingPartOne))
+
+		timingPartTwo := time.Now()
+		cfg.answerPart2(cfg.year2022day06part2(instructions))
+		cfg.timeInfo(InfoTypeTwo, time.Since(timingPartTwo))
+
+		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
+		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
+	}
 }
 
 // 2022-01-1: 70369
@@ -488,6 +506,56 @@ func (cfg *config) year2022day05part2(instructions []string) string {
 	var out string
 	for j := 1; j <= len(stacks); j++ {
 		out += stacks[j][len(stacks[j])-1:][0]
+	}
+
+	return out
+}
+
+// 2022-06-1: 1175
+func (cfg *config) year2022day06part1(instructions string) int {
+	var (
+		window = 4
+		out    int
+	)
+
+	for j := 0; j <= len(instructions)-window; j++ {
+		slice := instructions[j : j+window]
+
+		chars := make(map[byte]int, window)
+		for i := 0; i < window; i++ {
+			chars[slice[i]]++
+		}
+
+		if len(chars) == window {
+			out = j + window
+
+			break
+		}
+	}
+
+	return out
+}
+
+// 2022-06-2: 3217
+func (cfg *config) year2022day06part2(instructions string) int {
+	var (
+		window = 14
+		out    int
+	)
+
+	for j := 0; j <= len(instructions)-window; j++ {
+		slice := instructions[j : j+window]
+
+		chars := make(map[byte]int, window)
+		for i := 0; i < window; i++ {
+			chars[slice[i]]++
+		}
+
+		if len(chars) == window {
+			out = j + window
+
+			break
+		}
 	}
 
 	return out
