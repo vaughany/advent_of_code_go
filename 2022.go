@@ -113,6 +113,129 @@ func (cfg *config) run2022() {
 		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
 		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
 	}
+
+	if cfg.day == 7 || cfg.day == 0 {
+		cfg.title(2022, 7)
+		cfg.notYetImplemented()
+		// timingStart := time.Now()
+		// instructions := cfg.getInputAsStrings(2022, 7)
+		// cfg.timeInfo(InfoTypeSetup, time.Since(timingStart))
+
+		// timingPartOne := time.Now()
+		// cfg.answerPart1(cfg.year2022day07part1(instructions))
+		// cfg.timeInfo(InfoTypeOne, time.Since(timingPartOne))
+
+		// timingPartTwo := time.Now()
+		// cfg.answerPart2(cfg.year2022day07part2(instructions))
+		// cfg.timeInfo(InfoTypeTwo, time.Since(timingPartTwo))
+
+		// cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
+		// cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
+	}
+
+	if cfg.day == 8 || cfg.day == 0 {
+		cfg.title(2022, 8)
+		timingStart := time.Now()
+		instructions := cfg.getInputAsStrings(2022, 8)
+		cfg.timeInfo(InfoTypeSetup, time.Since(timingStart))
+
+		timingPartOne := time.Now()
+		cfg.answerPart1(cfg.year2022day08part1(instructions))
+		cfg.timeInfo(InfoTypeOne, time.Since(timingPartOne))
+
+		timingPartTwo := time.Now()
+		cfg.answerPart2(cfg.year2022day08part2(instructions))
+		cfg.timeInfo(InfoTypeTwo, time.Since(timingPartTwo))
+
+		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
+		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
+	}
+
+	if cfg.day == 9 || cfg.day == 0 {
+		cfg.title(2015, 9)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 10 || cfg.day == 0 {
+		cfg.title(2015, 10)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 11 || cfg.day == 0 {
+		cfg.title(2015, 11)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 12 || cfg.day == 0 {
+		cfg.title(2015, 12)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 13 || cfg.day == 0 {
+		cfg.title(2015, 13)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 14 || cfg.day == 0 {
+		cfg.title(2015, 14)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 15 || cfg.day == 0 {
+		cfg.title(2015, 15)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 16 || cfg.day == 0 {
+		cfg.title(2015, 16)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 17 || cfg.day == 0 {
+		cfg.title(2015, 17)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 18 || cfg.day == 0 {
+		cfg.title(2015, 18)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 19 || cfg.day == 0 {
+		cfg.title(2015, 19)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 20 || cfg.day == 0 {
+		cfg.title(2015, 20)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 21 || cfg.day == 0 {
+		cfg.title(2015, 21)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 22 || cfg.day == 0 {
+		cfg.title(2015, 22)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 23 || cfg.day == 0 {
+		cfg.title(2015, 23)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 24 || cfg.day == 0 {
+		cfg.title(2015, 24)
+		cfg.notYetImplemented()
+	}
+
+	if cfg.day == 25 || cfg.day == 0 {
+		cfg.title(2015, 25)
+		cfg.notYetImplemented()
+	}
+
 }
 
 // 2022-01-1: 70369
@@ -555,6 +678,306 @@ func (cfg *config) year2022day06part2(instructions string) int {
 			out = j + window
 
 			break
+		}
+	}
+
+	return out
+}
+
+// 2022-07-1: NOT 1226869, too log
+// func (cfg *config) year2022day07part1(instructions []string) int {
+// path := ""
+// paths := make(map[string]int)
+// currentFolder := ""
+
+// for _, ins := range instructions {
+// 	// fmt.Println(ins)
+// 	if strings.HasPrefix(ins, "$") {
+// 		command := strings.Split(ins, " ")[1:]
+// 		if command[0] == "ls" {
+// 			continue
+// 		}
+
+// 		if command[0] == "cd" {
+// 			switch command[1] {
+// 			case "/":
+// 				fmt.Println("GO TO ROOT")
+// 				path = "/"
+// 			case "..":
+// 				fmt.Println("BACK")
+// 				path = strings.Replace(path, currentFolder+"/", "", 1)
+// 			default:
+// 				fmt.Println("CHANGE TO FOLDER")
+// 				currentFolder = command[1]
+// 				path += currentFolder + "/"
+// 			}
+// 		}
+
+// 	} else {
+// 		file := strings.Split(ins, " ")
+// 		if file[0] == "dir" {
+// 			fmt.Println("CREATE FOLDER")
+// 			paths[path+file[1]+"/"] += 0
+// 		} else {
+// 			fmt.Println("FILE SIZE")
+// 			size, _ := strconv.Atoi(file[0])
+// 			paths[path+file[1]] = size
+// 		}
+
+// 	}
+
+// 	fmt.Printf("%#v\n", path)
+// 	fmt.Printf("%#v\n\n", paths)
+// }
+
+// return 0
+// }
+
+// 2022-07-2:
+// func (cfg *config) year2022day07part2(instructions []string) int {
+// 	return 0
+// }
+
+// 2022-08-1: 1776
+func (cfg *config) year2022day08part1(instructions []string) int {
+	var (
+		out      int
+		gridSize = len(instructions[0])
+		grid     = make([][]int, gridSize)
+	)
+
+	// Create grid.
+	for i := range grid {
+		grid[i] = make([]int, gridSize)
+	}
+
+	// Populate grid from instructions.
+	for li, line := range instructions {
+		for di, digit := range line {
+			d, _ := strconv.Atoi(string(digit))
+			grid[di][li] = d
+		}
+	}
+
+	if cfg.debug {
+		cfg.drawGrid(grid)
+	}
+
+	// Print the grid, but ignore the perimeter trees.
+	if cfg.debug {
+		for y := 1; y <= len(grid)-2; y++ {
+			for x := 1; x <= len(grid[0])-2; x++ {
+				fmt.Print(grid[x][y])
+			}
+			fmt.Println()
+		}
+	}
+
+	for y := 1; y <= len(grid)-2; y++ {
+		for x := 1; x <= len(grid[0])-2; x++ {
+		restart:
+			if x > len(grid[0])-2 || y > len(grid[0])-2 {
+				break
+			}
+
+			if cfg.debug {
+				fmt.Printf("x: %d, y: %d, id: %d\n", x, y, grid[x][y])
+			}
+
+			var visible bool
+
+			// UP:
+			visible = true
+			for j := 1; j <= y; j++ {
+				if cfg.debug {
+					fmt.Println("UP:", grid[x][y-j])
+				}
+				if grid[x][y-j] >= grid[x][y] {
+					visible = false
+					break
+				}
+			}
+			if visible {
+				out++
+				x++
+				goto restart
+			}
+
+			// DOWN:
+			visible = true
+			for j := y; j <= len(grid)-2; j++ {
+				if cfg.debug {
+					fmt.Println("DOWN:", grid[x][j+1])
+				}
+				if grid[x][j+1] >= grid[x][y] {
+					visible = false
+					break
+				}
+			}
+			if visible {
+				out++
+				x++
+				goto restart
+			}
+
+			// LEFT:
+			visible = true
+			for j := 1; j <= x; j++ {
+				if cfg.debug {
+					fmt.Println("LEFT:", grid[x-j][y])
+				}
+				if grid[x-j][y] >= grid[x][y] {
+					visible = false
+					break
+				}
+			}
+			if visible {
+				out++
+				x++
+				goto restart
+			}
+
+			// RIGHT:
+			visible = true
+			for j := x; j <= len(grid)-2; j++ {
+				if cfg.debug {
+					fmt.Println("RIGHT:", grid[j+1][y])
+				}
+				if grid[j+1][y] >= grid[x][y] {
+					visible = false
+					break
+				}
+			}
+			if visible {
+				out++
+				x++
+				goto restart
+			}
+
+		}
+	}
+
+	return out + (gridSize * 4) - 4
+	// return out
+}
+
+func (cfg *config) drawGrid(grid [][]int) {
+	for y := 0; y <= len(grid)-1; y++ {
+		for x := 0; x <= len(grid[0])-1; x++ {
+			fmt.Print(grid[x][y])
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+}
+
+// 2022-08-2: 234416
+func (cfg *config) year2022day08part2(instructions []string) int {
+	var (
+		out      int
+		gridSize = len(instructions[0])
+		grid     = make([][]int, gridSize)
+	)
+
+	// Create grid.
+	for i := range grid {
+		grid[i] = make([]int, gridSize)
+	}
+
+	// Populate grid from instructions.
+	for li, line := range instructions {
+		for di, digit := range line {
+			d, _ := strconv.Atoi(string(digit))
+			grid[di][li] = d
+		}
+	}
+
+	if cfg.debug {
+		cfg.drawGrid(grid)
+	}
+
+	for y := 1; y <= len(grid)-2; y++ {
+		for x := 1; x <= len(grid[0])-2; x++ {
+			if x > len(grid[0])-2 || y > len(grid[0])-2 {
+				break
+			}
+
+			if cfg.debug {
+				fmt.Printf("x: %d, y: %d, id: %d\n", x, y, grid[x][y])
+			}
+
+			// UP:
+			var uc int
+			for j := 1; j <= y; j++ {
+				if grid[x][y-j] < grid[x][y] {
+					uc++
+				} else if grid[x][y-j] >= grid[x][y] {
+					uc++
+					break
+				}
+			}
+			if uc == 0 {
+				uc = 1
+			}
+			if cfg.debug {
+				fmt.Println("UP:", uc)
+			}
+
+			// DOWN:
+			var dc int
+			for j := y; j <= len(grid)-2; j++ {
+				if grid[x][j+1] < grid[x][y] {
+					dc++
+				} else if grid[x][j+1] >= grid[x][y] {
+					dc++
+					break
+				}
+			}
+			if dc == 0 {
+				dc = 1
+			}
+			if cfg.debug {
+				fmt.Println("DOWN:", dc)
+			}
+
+			// LEFT:
+			var lc int
+			for j := 1; j <= x; j++ {
+				if grid[x-j][y] < grid[x][y] {
+					lc++
+				} else if grid[x-j][y] >= grid[x][y] {
+					lc++
+					break
+				}
+			}
+			if lc == 0 {
+				lc = 1
+			}
+			if cfg.debug {
+				fmt.Println("LEFT:", lc)
+			}
+
+			// RIGHT:
+			var rc int
+			for j := x; j <= len(grid)-2; j++ {
+				if grid[j+1][y] < grid[x][y] {
+					rc++
+				} else if grid[j+1][y] >= grid[x][y] {
+					rc++
+					break
+				}
+			}
+			if rc == 0 {
+				rc = 1
+			}
+			if cfg.debug {
+				fmt.Println("RIGHT:", rc)
+			}
+
+			tmpOut := uc * lc * rc * dc
+			if tmpOut > out {
+				out = tmpOut
+			}
 		}
 	}
 
