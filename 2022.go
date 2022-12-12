@@ -157,8 +157,21 @@ func (cfg *config) run2022() {
 	}
 
 	if cfg.day == 10 || cfg.day == 0 {
-		cfg.title(2015, 10)
-		cfg.notYetImplemented()
+		cfg.title(2022, 10)
+		timingStart := time.Now()
+		instructions := cfg.getInputAsStrings(2022, 10)
+		cfg.timeInfo(InfoTypeSetup, time.Since(timingStart))
+
+		timingPartOne := time.Now()
+		cfg.answerPart1(cfg.year2022day10part1(instructions))
+		cfg.timeInfo(InfoTypeOne, time.Since(timingPartOne))
+
+		timingPartTwo := time.Now()
+		cfg.answerPart2(cfg.year2022day10part2(instructions))
+		cfg.timeInfo(InfoTypeTwo, time.Since(timingPartTwo))
+
+		cfg.timeInfo(InfoTypeBoth, time.Since(timingPartOne))
+		cfg.timeInfo(InfoTypeEverything, time.Since(timingStart))
 	}
 
 	if cfg.day == 11 || cfg.day == 0 {
@@ -982,4 +995,108 @@ func (cfg *config) year2022day08part2(instructions []string) int {
 	}
 
 	return out
+}
+
+// 2022-10-1: 15680
+func (cfg *config) year2022day10part1(instructions []string) int {
+	var (
+		x      int = 1
+		out    int
+		cycles int = 1
+		ins    int
+		thing  = map[int]int{}
+		wait   bool
+	)
+
+	for {
+		if thing[cycles] != 0 {
+			x += thing[cycles]
+			delete(thing, cycles)
+		}
+
+		if cycles == 20 || cycles == 60 || cycles == 100 || cycles == 140 || cycles == 180 || cycles == 220 {
+			out += cycles * x
+		}
+
+		if wait {
+			wait = false
+			cycles++
+			continue
+		}
+
+		if ins == len(instructions) || cycles > 220 {
+			break
+		}
+
+		if instructions[ins] != "noop" {
+			split := strings.Split(instructions[ins], " ")
+			number, _ := strconv.Atoi(split[1])
+			thing[cycles+2] = number
+			wait = true
+		}
+
+		ins++
+		cycles++
+	}
+
+	return out
+}
+
+// 2022-10-2:
+func (cfg *config) year2022day10part2(instructions []string) int {
+	var (
+		x      int = 1
+		out    int
+		cycles int = 1
+		ins    int
+		thing  = map[int]int{}
+		wait   bool
+		crt    string
+	)
+
+	for {
+		if thing[cycles] != 0 {
+			x += thing[cycles]
+			delete(thing, cycles)
+		}
+
+		if wait {
+			wait = false
+			cycles++
+			continue
+		}
+
+		if ins == len(instructions) || cycles > 220 {
+			break
+		}
+
+		if instructions[ins] != "noop" {
+			split := strings.Split(instructions[ins], " ")
+			number, _ := strconv.Atoi(split[1])
+			thing[cycles+2] = number
+			wait = true
+		}
+
+		ins++
+		cycles++
+	}
+
+	return out
+
+}
+
+func (cfg *config) drawCRT(in string) {
+	// fmt.Printf("%s\n%s\n%s\n%s\n%s\n%s\n\n", in[:40], in[40:80], in[80:120], in[120:160], in[160:200], in[200:240])
+
+	// for j := 0; j < len(in)-1; j++ {
+	// 	if j > 0 && j%40 == 0 {
+	// 		fmt.Println()
+	// 	}
+	// 	fmt.Print(string(in[j]))
+	// }
+	// fmt.Println()
+
+	fmt.Println(in)
+
+	fmt.Println()
 }
