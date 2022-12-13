@@ -1000,103 +1000,71 @@ func (cfg *config) year2022day08part2(instructions []string) int {
 // 2022-10-1: 15680
 func (cfg *config) year2022day10part1(instructions []string) int {
 	var (
-		x      int = 1
 		out    int
-		cycles int = 1
-		ins    int
-		thing  = map[int]int{}
-		wait   bool
+		cycles []int
+		x      = 1
 	)
 
-	for {
-		if thing[cycles] != 0 {
-			x += thing[cycles]
-			delete(thing, cycles)
-		}
+	cycles = append(cycles, x)
 
-		if cycles == 20 || cycles == 60 || cycles == 100 || cycles == 140 || cycles == 180 || cycles == 220 {
-			out += cycles * x
-		}
+	for _, ins := range instructions {
+		if strings.HasPrefix(ins, "noop") {
+			cycles = append(cycles, x)
 
-		if wait {
-			wait = false
-			cycles++
-			continue
+		} else {
+			cycles = append(cycles, x)
+			value, _ := strconv.Atoi(strings.Split(ins, " ")[1])
+			x += value
+			cycles = append(cycles, x)
 		}
+	}
 
-		if ins == len(instructions) || cycles > 220 {
-			break
-		}
-
-		if instructions[ins] != "noop" {
-			split := strings.Split(instructions[ins], " ")
-			number, _ := strconv.Atoi(split[1])
-			thing[cycles+2] = number
-			wait = true
-		}
-
-		ins++
-		cycles++
+	for _, x := range []int{20, 60, 100, 140, 180, 220} {
+		out += cycles[x-1] * x
 	}
 
 	return out
 }
 
-// 2022-10-2:
+// 2022-10-2: ZFBFHGUP
 func (cfg *config) year2022day10part2(instructions []string) int {
 	var (
-		x      int = 1
-		out    int
-		cycles int = 1
-		ins    int
-		thing  = map[int]int{}
-		wait   bool
-		crt    string
+		cycles     []int
+		x          = 1
+		screen     []string
+		screenLine string
 	)
 
-	for {
-		if thing[cycles] != 0 {
-			x += thing[cycles]
-			delete(thing, cycles)
-		}
+	cycles = append(cycles, x)
 
-		if wait {
-			wait = false
-			cycles++
-			continue
-		}
+	for _, ins := range instructions {
+		if strings.HasPrefix(ins, "noop") {
+			cycles = append(cycles, x)
 
-		if ins == len(instructions) || cycles > 220 {
-			break
+		} else {
+			cycles = append(cycles, x)
+			value, _ := strconv.Atoi(strings.Split(ins, " ")[1])
+			x += value
+			cycles = append(cycles, x)
 		}
-
-		if instructions[ins] != "noop" {
-			split := strings.Split(instructions[ins], " ")
-			number, _ := strconv.Atoi(split[1])
-			thing[cycles+2] = number
-			wait = true
-		}
-
-		ins++
-		cycles++
 	}
 
-	return out
+	for j := 0; j < len(cycles); j++ {
+		sprite := len(screenLine)
 
-}
+		if sprite == cycles[j] || sprite == cycles[j]+1 || sprite == cycles[j]-1 {
+			screenLine += "#"
+		} else {
+			screenLine += " "
+		}
 
-func (cfg *config) drawCRT(in string) {
-	// fmt.Printf("%s\n%s\n%s\n%s\n%s\n%s\n\n", in[:40], in[40:80], in[80:120], in[120:160], in[160:200], in[200:240])
+		if len(screenLine) == 40 {
+			screen = append(screen, screenLine)
+			screenLine = ""
+		}
+	}
 
-	// for j := 0; j < len(in)-1; j++ {
-	// 	if j > 0 && j%40 == 0 {
-	// 		fmt.Println()
-	// 	}
-	// 	fmt.Print(string(in[j]))
-	// }
-	// fmt.Println()
+	cfg.info(strings.Join(screen, "\n"))
 
-	fmt.Println(in)
-
-	fmt.Println()
+	return 0
 }
