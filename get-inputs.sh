@@ -3,13 +3,16 @@
 COOKIE=your-aoc-session-cookie-here
 WHOAMI=$(whoami)
 UNAME=$(uname -n)
+THISYEAR=$(date +%Y)
 
-for YEAR in {2015..2023}; do
+for (( YEAR=2015; YEAR<="${THISYEAR}"; YEAR++ )); do
     for DAY in {1..25}; do
-        echo "Downloading ${YEAR} day ${DAY}:"
+        URL="https://adventofcode.com/${YEAR}/day/${DAY}/input"
         OUTPUT="cmd/${YEAR}/inputs/$(printf "%02d" "${DAY}").txt"
-        curl -A "${WHOAMI}-${UNAME} via curl" "https://adventofcode.com/${YEAR}/day/${DAY}/input" --progress-bar --cookie "session=${COOKIE}" -o "${OUTPUT}"
+
+        echo "Downloading ${YEAR} day ${DAY} from ${URL}"
+        curl -A "${WHOAMI}-${UNAME} via curl" "${URL}" --progress-bar --cookie "session=${COOKIE}" -o "${OUTPUT}"
+
         sleep 5
-        echo
     done
 done
