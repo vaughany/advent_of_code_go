@@ -1,3 +1,3 @@
 module vaughany.com/advent_of_code_go
 
-go 1.19
+go 1.21.3
