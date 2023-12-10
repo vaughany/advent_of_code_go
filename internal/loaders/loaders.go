@@ -120,6 +120,32 @@ func GetInt(loader Loader) (int, error) {
 	return output[0], nil
 }
 
+// Get2DInts takes a file where every line is multiple strings separated by spaces, and returns [][]int (2D slice of ints).
+func Get2DInts(loader Loader) (output [][]int, err error) {
+	input, err := GetStrings(loader)
+	if err != nil {
+		return output, err
+	}
+
+	for _, lineStr := range input {
+		lineSlice := strings.Split(lineStr, " ")
+
+		var intSlice []int
+		for _, ls := range lineSlice {
+			thisInt, err := strconv.Atoi(ls)
+			if err != nil {
+				panic(err)
+			}
+
+			intSlice = append(intSlice, thisInt)
+		}
+
+		output = append(output, intSlice)
+	}
+
+	return output, nil
+}
+
 // GetBytes takes a one-line file and returns a slice of bytes.
 func GetBytes(loader Loader) ([]byte, error) {
 	var output string
