@@ -150,7 +150,7 @@ func (cfg *config) runDay(day int) error {
 	case 1:
 		err = cfg.day01(loader)
 	case 2:
-		output.NotYetImplemented()
+		err = cfg.day02(loader)
 	case 3:
 		output.NotYetImplemented()
 	case 4:
