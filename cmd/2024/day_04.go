@@ -46,10 +46,12 @@ func (cfg *config) day04part1(grid []string) (total int) {
 
 	for y := 0; y < maxY; y++ {
 		for x := 0; x < maxX; x++ {
-			total += day3Vertical(grid, x, y, maxY)
-			total += day3Horizontal(grid, x, y, maxX)
-			total += day3DiagonalUp(grid, x, y, maxX)
-			total += day3DiagonalDown(grid, x, y, maxX, maxY)
+			if string(grid[y][x]) == `X` || string(grid[y][x]) == `S` {
+				total += day3Vertical(grid, x, y, maxY)
+				total += day3Horizontal(grid, x, y, maxX)
+				total += day3DiagonalUp(grid, x, y, maxX)
+				total += day3DiagonalDown(grid, x, y, maxX, maxY)
+			}
 		}
 	}
 
