@@ -21,13 +21,14 @@ func (cfg *config) day06(loader loaders.Loader) error {
 	}
 
 	timingPartOne := time.Now()
-	output.AnswerPart1(cfg.day06part1(instructions))
+	answerPt1, paths := cfg.day06part1(instructions)
+	output.AnswerPart1(answerPt1)
 	if cfg.timing {
 		output.TimeInfo(output.InfoTypeOne, time.Since(timingPartOne))
 	}
 
 	timingPartTwo := time.Now()
-	output.AnswerPart2(cfg.day06part2(instructions))
+	output.AnswerPart2(cfg.day06part2(instructions, paths))
 	if cfg.timing {
 		output.TimeInfo(output.InfoTypeTwo, time.Since(timingPartTwo))
 	}
@@ -40,8 +41,17 @@ func (cfg *config) day06(loader loaders.Loader) error {
 	return nil
 }
 
+type day06cell struct {
+	path  string
+	count int
+}
+
+type xy struct {
+	x, y int
+}
+
 // 2024-06-1: 4665
-func (cfg *config) day06part1(instructions []string) (total int) {
+func (cfg *config) day06part1(instructions []string) (total int, listOfPaths []xy) {
 	const (
 		up, down, left, right = `u`, `d`, `l`, `r`
 		obstacle              = `#`
@@ -62,7 +72,6 @@ func (cfg *config) day06part1(instructions []string) (total int) {
 	)
 
 	// Initialise grid.
-	grid = make([][]string, maxY)
 	for i := 0; i < maxY; i++ {
 		grid[i] = make([]string, maxX)
 	}
@@ -143,6 +152,8 @@ func (cfg *config) day06part1(instructions []string) (total int) {
 		for x := 0; x < maxX; x++ {
 			if grid[y][x] == traversed {
 				total++
+
+				listOfPaths = append(listOfPaths, xy{x: x, y: y})
 			}
 		}
 	}
@@ -164,13 +175,8 @@ func day06DrawGrid(grid [][]string) {
 	fmt.Println()
 }
 
-type day06cell struct {
-	path  string
-	count int
-}
-
 // 2024-06-2: 1688
-func (cfg *config) day06part2(instructions []string) (total int) {
+func (cfg *config) day06part2(instructions []string, listOfPaths []xy) (total int) {
 	const (
 		up, down, left, right = `u`, `d`, `l`, `r`
 		obstacle              = `#`
@@ -187,115 +193,115 @@ func (cfg *config) day06part2(instructions []string) (total int) {
 		grid           = make([][]day06cell, maxY)
 	)
 
-	// 'Obstacle' X and Y.
-	for oy := 0; oy < maxY; oy++ {
-		for ox := 0; ox < maxX; ox++ {
-			// Reset these each run.
-			outOfBounds := false
-			dir := `u`
+	// Put obstacles only on the path already taken (provided by part one).
+	for _, lop := range listOfPaths {
+		// Reset these each run.
+		outOfBounds := false
+		dir := `u`
 
-			// Reset the grid.
-			for i := 0; i < maxY; i++ {
-				grid[i] = make([]day06cell, maxX)
-			}
-
-			for y := 0; y < maxY; y++ {
-				for x := 0; x < maxX; x++ {
-					grid[y][x].path = string(instructions[y][x])
-
-					// Guard's start position.
-					if grid[y][x].path == startGuard {
-						guardX = x
-						guardY = y
-
-						grid[y][x].path = guard
-					}
-				}
-			}
-
-			// Insert the new obstacle or skip if the cell is not space.
-			if grid[oy][ox].path == space {
-				grid[oy][ox].path = obstacle
-			} else {
-				continue
-			}
-
-			for {
-				switch dir {
-				case up:
-					if guardY-1 < 0 {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						outOfBounds = true
-					} else if grid[guardY-1][guardX].path == obstacle {
-						dir = right
-					} else {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						guardY--
-						grid[guardY][guardX].path = guard
-					}
-
-				case right:
-					if guardX+1 >= maxX {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						outOfBounds = true
-					} else if grid[guardY][guardX+1].path == obstacle {
-						dir = down
-					} else {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						guardX++
-						grid[guardY][guardX].path = guard
-					}
-
-				case down:
-					if guardY+1 >= maxY {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						outOfBounds = true
-					} else if grid[guardY+1][guardX].path == obstacle {
-						dir = left
-					} else {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						guardY++
-						grid[guardY][guardX].path = guard
-					}
-
-				case left:
-					if guardX-1 < 0 {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						outOfBounds = true
-					} else if grid[guardY][guardX-1].path == obstacle {
-						dir = up
-					} else {
-						grid[guardY][guardX].path = traversed
-						grid[guardY][guardX].count++
-						guardX--
-						grid[guardY][guardX].path = guard
-					}
-				}
-
-				if outOfBounds {
-					goto done
-				}
-
-				if grid[guardY][guardX].count > 3 {
-					total++
-
-					if cfg.debug {
-						day06DrawGrid2(grid)
-					}
-
-					break
-				}
-			}
-
-		done:
+		// Reset the grid.
+		for i := 0; i < maxY; i++ {
+			grid[i] = make([]day06cell, maxX)
 		}
+
+		for y := 0; y < maxY; y++ {
+			for x := 0; x < maxX; x++ {
+				grid[y][x].path = string(instructions[y][x])
+
+				// Guard's start position.
+				if grid[y][x].path == startGuard {
+					guardX = x
+					guardY = y
+
+					grid[y][x].path = guard
+				}
+			}
+		}
+
+		// Insert the new obstacle or skip if the cell is not space.
+		if grid[lop.y][lop.x].path == space {
+			grid[lop.y][lop.x].path = obstacle
+		} else {
+			continue
+		}
+
+		for {
+			switch dir {
+			case up:
+				if guardY-1 < 0 {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					outOfBounds = true
+				} else if grid[guardY-1][guardX].path == obstacle {
+					dir = right
+				} else {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					guardY--
+					grid[guardY][guardX].path = guard
+				}
+
+			case right:
+				if guardX+1 >= maxX {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					outOfBounds = true
+				} else if grid[guardY][guardX+1].path == obstacle {
+					dir = down
+				} else {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					guardX++
+					grid[guardY][guardX].path = guard
+				}
+
+			case down:
+				if guardY+1 >= maxY {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					outOfBounds = true
+				} else if grid[guardY+1][guardX].path == obstacle {
+					dir = left
+				} else {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					guardY++
+					grid[guardY][guardX].path = guard
+				}
+
+			case left:
+				if guardX-1 < 0 {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					outOfBounds = true
+				} else if grid[guardY][guardX-1].path == obstacle {
+					dir = up
+				} else {
+					grid[guardY][guardX].path = traversed
+					grid[guardY][guardX].count++
+					guardX--
+					grid[guardY][guardX].path = guard
+				}
+			}
+
+			if outOfBounds {
+				goto done
+			}
+
+			if grid[guardY][guardX].count > 3 {
+				total++
+
+				if cfg.debug {
+					day06DrawGrid2(grid)
+				}
+
+				break
+			}
+		}
+
+	done:
+		// 	}
+		// }
 	}
 
 	return
