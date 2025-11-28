@@ -3,7 +3,6 @@ package loaders
 import (
 	"bufio"
 	"embed"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -35,21 +34,24 @@ func NewLoader(fs embed.FS, year, day int, sample bool) Loader {
 
 // loadFile reads a file from embedded filesystem with one or more lines and return an array of strings.
 func (l *Loader) loadFile() ([]string, error) {
-	var lines []string
-
 	file, err := l.fs.Open(l.filename)
 	if err != nil {
-		return lines, err
+		return nil, err
 	}
 	defer file.Close()
 
+	var lines []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
 
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
 	if len(lines) < 1 {
-		return lines, errors.New(fmt.Sprintf("input file '%s' has no lines", l.filename))
+		return nil, fmt.Errorf("input file '%s' has no lines", l.filename)
 	}
 
 	return lines, nil
@@ -57,52 +59,46 @@ func (l *Loader) loadFile() ([]string, error) {
 
 // GetStrings takes a file where every line is a string, and returns a slice of strings.
 func GetStrings(loader Loader) ([]string, error) {
-	var output []string
-
-	output, err := loader.loadFile()
-	if err != nil {
-		return output, err
-	}
-
-	return output, nil
+	return loader.loadFile()
 }
 
 // GetString takes a one-line file and returns a string.
 func GetString(loader Loader) (string, error) {
-	var output []string
-
-	output, err := GetStrings(loader)
+	file, err := loader.fs.Open(loader.filename)
 	if err != nil {
 		return "", err
 	}
+	defer file.Close()
 
-	return output[0], nil
+	scanner := bufio.NewScanner(file)
+	if !scanner.Scan() {
+		return "", fmt.Errorf("input file '%s' has no lines", loader.filename)
+	}
+
+	return scanner.Text(), scanner.Err()
 }
 
 // GetInts takes a file where every line is an int, and returns a slice of ints.
 func GetInts(loader Loader) ([]int, error) {
-	var output []int
-
 	data, err := GetStrings(loader)
 	if err != nil {
-		return output, err
+		return nil, err
 	}
 
+	output := make([]int, 0, len(data))
 	for _, line := range data {
-		var int int
-
 		// If the line is blank, return 0. TODO: this may bite me in the butt at some point.
 		if line == "" {
-			int = 0
-
-		} else {
-			int, err = strconv.Atoi(line)
-			if err != nil {
-				return output, err
-			}
+			output = append(output, 0)
+			continue
 		}
 
-		output = append(output, int)
+		val, err := strconv.Atoi(line)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, val)
 	}
 
 	return output, nil
@@ -110,34 +106,54 @@ func GetInts(loader Loader) ([]int, error) {
 
 // GetInt takes a one-line file and returns an int.
 func GetInt(loader Loader) (int, error) {
-	var output []int
+	file, err := loader.fs.Open(loader.filename)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
 
-	output, err := GetInts(loader)
+	scanner := bufio.NewScanner(file)
+	if !scanner.Scan() {
+		return 0, fmt.Errorf("input file '%s' has no lines", loader.filename)
+	}
+
+	line := scanner.Text()
+	if err := scanner.Err(); err != nil {
+		return 0, err
+	}
+
+	// If the line is blank, return 0. TODO: this may bite me in the butt at some point.
+	if line == "" {
+		return 0, nil
+	}
+
+	val, err := strconv.Atoi(line)
 	if err != nil {
 		return 0, err
 	}
 
-	return output[0], nil
+	return val, nil
 }
 
 // Get2DInts takes a file where every line is multiple strings separated by spaces, and returns [][]int (2D slice of ints).
-func Get2DInts(loader Loader) (output [][]int, err error) {
+func Get2DInts(loader Loader) ([][]int, error) {
 	input, err := GetStrings(loader)
 	if err != nil {
-		return output, err
+		return nil, err
 	}
 
+	output := make([][]int, 0, len(input))
 	for _, lineStr := range input {
-		lineSlice := strings.Split(lineStr, " ")
+		lineSlice := strings.Fields(lineStr) // Fields handles multiple spaces better than Split
 
-		var intSlice []int
+		intSlice := make([]int, 0, len(lineSlice))
 		for _, ls := range lineSlice {
-			thisInt, err := strconv.Atoi(ls)
+			val, err := strconv.Atoi(ls)
 			if err != nil {
-				panic(err)
+				return nil, err
 			}
 
-			intSlice = append(intSlice, thisInt)
+			intSlice = append(intSlice, val)
 		}
 
 		output = append(output, intSlice)
@@ -148,11 +164,9 @@ func Get2DInts(loader Loader) (output [][]int, err error) {
 
 // GetBytes takes a one-line file and returns a slice of bytes.
 func GetBytes(loader Loader) ([]byte, error) {
-	var output string
-
 	output, err := GetString(loader)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 
 	return []byte(output), nil
@@ -160,18 +174,18 @@ func GetBytes(loader Loader) ([]byte, error) {
 
 // GetCSInts takes a one-line file where each data point is a comma-separated int, and returns a slice of ints.
 func GetCSInts(loader Loader) ([]int, error) {
-	var output []int
-
 	data, err := GetString(loader)
 	if err != nil {
-		return output, err
+		return nil, err
 	}
 
 	split := strings.Split(data, ",")
+
+	output := make([]int, 0, len(split))
 	for _, s := range split {
 		int, err := strconv.Atoi(s)
 		if err != nil {
-			return output, err
+			return nil, err
 		}
 
 		output = append(output, int)
