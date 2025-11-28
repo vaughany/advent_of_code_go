@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// TimeInfoType represents the type of timing information to display.
 type TimeInfoType int
 
 const (
@@ -19,11 +20,11 @@ const (
 type colourInfoType string
 
 const (
-	colourTitle  colourInfoType = "\u001b[32m"
-	colourInfo   colourInfoType = "\u001b[33m"
-	colourTiming colourInfoType = "\u001b[36m"
-	colourReset  colourInfoType = "\u001b[0m"
-	colourNYI    colourInfoType = "\u001b[90m"
+	colourTitle  colourInfoType = "\u001b[32m" // Green
+	colourInfo   colourInfoType = "\u001b[33m" // Yellow
+	colourTiming colourInfoType = "\u001b[36m" // Cyan
+	colourReset  colourInfoType = "\u001b[0m"  // Reset
+	colourNYI    colourInfoType = "\u001b[90m" // Dark gray
 )
 
 func sendToLog(colour colourInfoType, contents string) {
@@ -34,47 +35,57 @@ func answer(part string, output any) {
 	fmt.Printf("Part %s: %v\n", part, output)
 }
 
+// Title displays the Advent of Code year title in green.
 func Title(year int) {
 	sendToLog(colourTitle, fmt.Sprintf("Advent of Code %d.", year))
 }
 
+// Subtitle displays the day subtitle in green.
 func Subtitle(day int) {
 	sendToLog(colourTitle, fmt.Sprintf("Day %d.", day))
 }
 
+// AnswerPart1 displays the answer for part one.
 func AnswerPart1(output any) {
 	answer("One", output)
 }
 
+// AnswerPart2 displays the answer for part two.
 func AnswerPart2(output any) {
 	answer("Two", output)
 }
 
+// Info displays informational text in yellow.
 func Info(text string) {
 	sendToLog(colourInfo, text)
 }
 
+// NotYetImplemented displays a "Not yet implemented" message in dark gray.
 func NotYetImplemented() {
 	sendToLog(colourNYI, "Not yet implemented")
 }
 
+// TimeInfo displays timing information based on the timeType in cyan.
+// If an unknown timeType is provided, it defaults to "Timing: ".
 func TimeInfo(timeType TimeInfoType, timeDuration time.Duration) {
-	var output string
+	var prefix string
 
 	switch timeType {
 	case InfoTypeSetup:
-		output = "Setup took "
+		prefix = "Setup took "
 	case InfoTypeOne:
-		output = "Part One took "
+		prefix = "Part One took "
 	case InfoTypeTwo:
-		output = "Part Two took "
+		prefix = "Part Two took "
 	case InfoTypeBoth:
-		output = "Both Parts took "
+		prefix = "Both Parts took "
 	case InfoTypeEverything:
-		output = "Everything took "
+		prefix = "Everything took "
 	case InfoTypeWholeRun:
-		output = "\nThe whole run took "
+		prefix = "\nThe whole run took "
+	default:
+		prefix = "Timing: "
 	}
 
-	sendToLog(colourTiming, fmt.Sprintf("%s%s", output, timeDuration))
+	sendToLog(colourTiming, fmt.Sprintf("%s%s", prefix, timeDuration))
 }
