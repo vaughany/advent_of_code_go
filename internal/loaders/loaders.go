@@ -47,11 +47,11 @@ func (l *Loader) loadFile() ([]string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return lines, err
 	}
 
 	if len(lines) < 1 {
-		return nil, fmt.Errorf("input file '%s' has no lines", l.filename)
+		return lines, fmt.Errorf("input file '%s' has no lines", l.filename)
 	}
 
 	return lines, nil
@@ -64,18 +64,14 @@ func GetStrings(loader Loader) ([]string, error) {
 
 // GetString takes a one-line file and returns a string.
 func GetString(loader Loader) (string, error) {
-	file, err := loader.fs.Open(loader.filename)
+	var output []string
+
+	output, err := GetStrings(loader)
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	if !scanner.Scan() {
-		return "", fmt.Errorf("input file '%s' has no lines", loader.filename)
-	}
-
-	return scanner.Text(), scanner.Err()
+	return output[0], nil
 }
 
 // GetInts takes a file where every line is an int, and returns a slice of ints.
@@ -87,18 +83,19 @@ func GetInts(loader Loader) ([]int, error) {
 
 	output := make([]int, 0, len(data))
 	for _, line := range data {
+		var num int
+
 		// If the line is blank, return 0. TODO: this may bite me in the butt at some point.
 		if line == "" {
-			output = append(output, 0)
-			continue
+			num = 0
+		} else {
+			num, err = strconv.Atoi(line)
+			if err != nil {
+				return nil, err
+			}
 		}
 
-		val, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err
-		}
-
-		output = append(output, val)
+		output = append(output, num)
 	}
 
 	return output, nil
@@ -106,33 +103,14 @@ func GetInts(loader Loader) ([]int, error) {
 
 // GetInt takes a one-line file and returns an int.
 func GetInt(loader Loader) (int, error) {
-	file, err := loader.fs.Open(loader.filename)
-	if err != nil {
-		return 0, err
-	}
-	defer file.Close()
+	var output []int
 
-	scanner := bufio.NewScanner(file)
-	if !scanner.Scan() {
-		return 0, fmt.Errorf("input file '%s' has no lines", loader.filename)
-	}
-
-	line := scanner.Text()
-	if err := scanner.Err(); err != nil {
-		return 0, err
-	}
-
-	// If the line is blank, return 0. TODO: this may bite me in the butt at some point.
-	if line == "" {
-		return 0, nil
-	}
-
-	val, err := strconv.Atoi(line)
+	output, err := GetInts(loader)
 	if err != nil {
 		return 0, err
 	}
 
-	return val, nil
+	return output[0], nil
 }
 
 // Get2DInts takes a file where every line is multiple strings separated by spaces, and returns [][]int (2D slice of ints).
@@ -144,16 +122,16 @@ func Get2DInts(loader Loader) ([][]int, error) {
 
 	output := make([][]int, 0, len(input))
 	for _, lineStr := range input {
-		lineSlice := strings.Fields(lineStr) // Fields handles multiple spaces better than Split
+		lineSlice := strings.Split(lineStr, " ")
 
 		intSlice := make([]int, 0, len(lineSlice))
 		for _, ls := range lineSlice {
-			val, err := strconv.Atoi(ls)
+			thisInt, err := strconv.Atoi(ls)
 			if err != nil {
 				return nil, err
 			}
 
-			intSlice = append(intSlice, val)
+			intSlice = append(intSlice, thisInt)
 		}
 
 		output = append(output, intSlice)
@@ -164,9 +142,11 @@ func Get2DInts(loader Loader) ([][]int, error) {
 
 // GetBytes takes a one-line file and returns a slice of bytes.
 func GetBytes(loader Loader) ([]byte, error) {
+	var output string
+
 	output, err := GetString(loader)
 	if err != nil {
-		return nil, err
+		return []byte{}, err
 	}
 
 	return []byte(output), nil
@@ -180,15 +160,36 @@ func GetCSInts(loader Loader) ([]int, error) {
 	}
 
 	split := strings.Split(data, ",")
-
 	output := make([]int, 0, len(split))
 	for _, s := range split {
-		int, err := strconv.Atoi(s)
+		num, err := strconv.Atoi(s)
 		if err != nil {
 			return nil, err
 		}
 
-		output = append(output, int)
+		output = append(output, num)
+	}
+
+	return output, nil
+}
+
+// GetStringsGrid returns a 2D slice of strings where the width is the length of the first string and the height is the number of rows.
+func GetStringsGrid(loader Loader) ([][]string, error) {
+	data, err := GetStrings(loader)
+	if err != nil {
+		return nil, err
+	}
+
+	width := len(data[0])
+	height := len(data)
+
+	output := make([][]string, height)
+	for i, d := range data {
+		row := make([]string, width)
+		for j := 0; j < len(d); j++ {
+			row[j] = string(d[j])
+		}
+		output[i] = row
 	}
 
 	return output, nil
