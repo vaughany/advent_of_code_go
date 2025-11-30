@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -55,7 +54,6 @@ func run() error {
 	flag.BoolVar(&cfg.runAllDays, "all-days", cfg.runAllDays, "run all days (overrides `-day`)")
 
 	getInput := flag.Bool("get-input", false, "fetches today's input (requires -cookie)")
-	sessionCookie := flag.String("cookie", "", "AoC session cookie, 128 chars")
 	webserver := flag.Bool("webserver", false, "launch web server to see input files")
 	version := flag.Bool("version", false, "version info")
 	listFiles := flag.Bool("list-files", false, "list embedded files")
@@ -91,11 +89,7 @@ func run() error {
 
 	// Run with e.g. `go run ./cmd/2022/ -get-input -cookie aoc-session-cookie-goes-here`
 	if *getInput {
-		if len(*sessionCookie) != 128 {
-			return errors.New("sorry, a session cookie (128 chars) from the AoC website is required to use the -get-input function")
-		}
-
-		err := support.GetPuzzleInput(cfg.year, cfg.day, *sessionCookie)
+		err := support.GetPuzzleInput(cfg.year, cfg.day)
 		if err != nil {
 			return err
 		}
