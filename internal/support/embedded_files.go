@@ -21,6 +21,10 @@ func GetAllFilenames(efs *embed.FS) error {
 	var files []string
 
 	err := fs.WalkDir(efs, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if d.IsDir() {
 			return nil
 		}
