@@ -2,11 +2,9 @@ package main
 
 import (
 	"embed"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"vaughany.com/advent_of_code_go/internal/aoc_config"
@@ -56,7 +54,6 @@ func run() error {
 	flag.BoolVar(&cfg.runAllDays, "all-days", cfg.runAllDays, "run all days (overrides '-day')")
 
 	getInput := flag.Bool("get-input", false, "fetches today's input (requires -cookie)")
-	sessionCookie := flag.String("cookie", "", "AoC session cookie, 128 chars")
 	webserver := flag.Bool("webserver", false, "launch web server to see input files")
 	version := flag.Bool("version", false, "version info")
 	listFiles := flag.Bool("list-files", false, "list embedded files")
@@ -93,23 +90,7 @@ func run() error {
 	// Run with e.g. `go run ./cmd/2024/ -get-input` to use the cookie stored in `.cookie`
 	//       or e.g. `go run ./cmd/2024/ -get-input -cookie aoc-session-cookie-goes-here`
 	if *getInput {
-		// Try loading the cookie from a file first.
-		if len(*sessionCookie) == 0 {
-			bytes, err := os.ReadFile(`.cookie`)
-			if err != nil {
-				return err
-			}
-
-			// Save the text from the file into the session cookie variable.
-			*sessionCookie = strings.TrimSpace(string(bytes))
-		}
-
-		// If the cookie, no matter it's origin, is not exactly 128 chars, bail.
-		if len(*sessionCookie) != 128 {
-			return errors.New("sorry, a session cookie (128 chars) from the AoC website is required to use the -get-input function")
-		}
-
-		err := support.GetPuzzleInput(cfg.year, cfg.day, *sessionCookie)
+		err := support.GetPuzzleInput(cfg.year, cfg.day)
 		if err != nil {
 			return err
 		}
@@ -156,11 +137,13 @@ func (cfg *config) runDay(day int) error {
 	case 4:
 		err = cfg.day04(loader)
 	case 5:
-		err = cfg.day05(loader)
+		// err = cfg.day05(loader)
+		output.NotYetImplemented()
 	case 6:
 		err = cfg.day06(loader)
 	case 7:
-		err = cfg.day07(loader)
+		// err = cfg.day07(loader)
+		output.NotYetImplemented()
 	case 8:
 		err = cfg.day08(loader)
 	case 9:
