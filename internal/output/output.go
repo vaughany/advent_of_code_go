@@ -31,18 +31,24 @@ func sendToLog(colour colourInfoType, contents string) {
 	fmt.Printf("%s%s%s\n", colour, contents, colourReset)
 }
 
+func sendToLogF(colour colourInfoType, format string, args ...any) {
+	fmt.Printf("%s", colour)
+	fmt.Printf(format, args...)
+	fmt.Printf("%s\n", colourReset)
+}
+
 func answer(part string, output any) {
 	fmt.Printf("Part %s: %v\n", part, output)
 }
 
 // Title displays the Advent of Code year title in green.
 func Title(year int) {
-	sendToLog(colourTitle, fmt.Sprintf("Advent of Code %d.", year))
+	sendToLogF(colourTitle, "Advent of Code %d.", year)
 }
 
 // Subtitle displays the day subtitle in green.
 func Subtitle(day int) {
-	sendToLog(colourTitle, fmt.Sprintf("Day %d.", day))
+	sendToLogF(colourTitle, "Day %d.", day)
 }
 
 // AnswerPart1 displays the answer for part one.
@@ -87,5 +93,5 @@ func TimeInfo(timeType TimeInfoType, timeDuration time.Duration) {
 		prefix = "Timing: "
 	}
 
-	sendToLog(colourTiming, fmt.Sprintf("%s%s", prefix, timeDuration))
+	sendToLogF(colourTiming, "%s%s", prefix, timeDuration)
 }
