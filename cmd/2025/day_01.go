@@ -5,15 +5,14 @@ import (
 	"strconv"
 	"time"
 
-	"vaughany.com/advent_of_code_go/internal/loaders"
 	"vaughany.com/advent_of_code_go/internal/output"
 )
 
-func (cfg *config) day01(loader loaders.Loader) error {
+func (cfg *config) day01() error {
 	timingStart := time.Now()
 
 	// 'instructions' can vary in type, depending on if we're dealing with ints, strings, bytes etc.
-	instructions, err := loaders.GetStrings(loader)
+	instructions, err := cfg.loader.GetStrings()
 	if err != nil {
 		return err
 	}

@@ -57,6 +57,29 @@ func (l *Loader) loadFile() ([]string, error) {
 	return lines, nil
 }
 
+// GetStrings2 takes a file where every line is a string, and returns a slice of strings.
+func (l *Loader) GetStrings() ([]string, error) {
+	return l.loadFile()
+}
+
+// GetString takes a one-line file and returns a string.
+func (l *Loader) GetString() (string, error) {
+	var output []string
+
+	output, err := l.GetStrings()
+	if err != nil {
+		return "", err
+	}
+
+	return output[0], nil
+}
+
+//
+
+//
+
+// Older functions, to be deprecated eventually.
+
 // GetStrings takes a file where every line is a string, and returns a slice of strings.
 func GetStrings(loader Loader) ([]string, error) {
 	return loader.loadFile()
