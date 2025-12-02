@@ -24,6 +24,7 @@ type config struct {
 		startup  time.Time
 		finished time.Time
 	}
+	loader loaders.Loader
 }
 
 func main() {
@@ -107,7 +108,8 @@ func run() error {
 	}
 
 	if cfg.runAllDays {
-		for j := 1; j <= 25; j++ {
+		// Just 12 days' worth of puzzles in 2025.
+		for j := 1; j <= 12; j++ {
 			err := cfg.runDay(j)
 			if err != nil {
 				return err
@@ -131,15 +133,15 @@ func run() error {
 func (cfg *config) runDay(day int) error {
 	output.Subtitle(day)
 
-	loader := loaders.NewLoader(cfg.efs, cfg.year, day, cfg.sample)
+	cfg.loader = loaders.NewLoader(cfg.efs, cfg.year, day, cfg.sample)
 
 	var err error
 
 	switch day {
 	case 1:
-		err = cfg.day01(loader)
+		err = cfg.day01()
 	case 2:
-		output.NotYetImplemented()
+		err = cfg.day02()
 	case 3:
 		output.NotYetImplemented()
 	case 4:
