@@ -167,3 +167,62 @@ func TestDay01Part2(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkDay01Mod100(b *testing.B) {
+	cfg := &config{}
+	inputs := []int{0, 42, 150, -1, -201, 250, -250, 999, -999}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = cfg.day01mod100(inputs[i%len(inputs)])
+	}
+}
+
+func BenchmarkDay01FloorDiv(b *testing.B) {
+	cfg := &config{}
+	inputs := []struct{ n, d int }{
+		{250, 100}, {50, 100}, {-1, 100}, {-101, 100}, {-100, 100},
+		{500, 100}, {-500, 100}, {0, 100}, {99, 100}, {-99, 100},
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tt := inputs[i%len(inputs)]
+		_ = cfg.day01floorDiv(tt.n, tt.d)
+	}
+}
+
+func BenchmarkDay01PassesBetween(b *testing.B) {
+	cfg := &config{}
+	inputs := []struct{ lo, hi int }{
+		{50, 300}, {300, 50}, {40, 0}, {0, 10}, {-250, 50},
+		{100, 200}, {-100, 100}, {0, 0}, {-500, 500}, {10, 20},
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tt := inputs[i%len(inputs)]
+		_ = cfg.day01passesBetween(tt.lo, tt.hi)
+	}
+}
+
+func BenchmarkDay01Part1(b *testing.B) {
+	cfg := &config{}
+	instructions := []string{
+		"R10", "R10", "L10", "L40", "R50", "R100", "L200", "R25", "L75", "R150",
+		"L50", "R200", "L100", "R75", "L25", "R300", "L150", "R50", "L200", "R100",
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = cfg.day01part1(instructions)
+	}
+}
+
+func BenchmarkDay01Part2(b *testing.B) {
+	cfg := &config{}
+	instructions := []string{
+		"R10", "L70", "R10", "R250", "L250", "R100", "L100", "R50", "L50", "R200",
+		"L200", "R150", "L150", "R75", "L75", "R300", "L300", "R25", "L25", "R500",
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = cfg.day01part2(instructions)
+	}
+}
