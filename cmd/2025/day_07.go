@@ -12,7 +12,7 @@ import (
 func (cfg *config) day07() error {
 	return runDayWithInput(
 		cfg,
-		func(l loaders.Loader) ([]string, error) { return l.GetStrings() },
+		loaders.GetStrings,
 		cfg.day07part1,
 		cfg.day07part2,
 	)
