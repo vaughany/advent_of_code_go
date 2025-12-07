@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"strconv"
 	"strings"
 
@@ -21,8 +20,7 @@ func (cfg *config) day02() error {
 func (cfg *config) day02part1(instructions []string) (safe int) {
 	for _, ins := range instructions {
 		report := day2ProcessInput(ins)
-
-		if day2AllIncOrDec(report) && day2DiffOneToThree(report) {
+		if day2Safe(report) {
 			safe++
 		}
 	}
@@ -35,11 +33,7 @@ func (cfg *config) day02part2(instructions []string) (safe int) {
 	for _, ins := range instructions {
 		report := day2ProcessInput(ins)
 
-		if !day2AllIncOrDec(report) || !day2DiffOneToThree(report) {
-			if day2CheckLevels(report) {
-				safe++
-			}
-		} else {
+		if day2Safe(report) || day2CheckLevels(report) {
 			safe++
 		}
 	}
@@ -48,64 +42,76 @@ func (cfg *config) day02part2(instructions []string) (safe int) {
 }
 
 func day2ProcessInput(in string) (out []int) {
-	for _, s := range strings.Split(in, ` `) {
-		int, err := strconv.Atoi(s)
+	fields := strings.Fields(in)
+	out = make([]int, 0, len(fields))
+
+	for _, s := range fields {
+		v, err := strconv.Atoi(s)
 		if err != nil {
 			panic(err)
 		}
-
-		out = append(out, int)
+		out = append(out, v)
 	}
 
 	return
 }
 
-func day2AllIncOrDec(in []int) bool {
-	greater, lesser := 0, 0
-
-	for i := 0; i < len(in)-1; i++ {
-		if in[i] > in[i+1] {
-			lesser++
-		} else if in[i] < in[i+1] {
-			greater++
-		} else {
-			return false
-		}
-	}
-
-	if greater > 0 && lesser > 0 {
-		return false
-	}
-
-	return true
-}
-
-func day2DiffOneToThree(in []int) bool {
-	for i := 0; i < len(in)-1; i++ {
-		diff := math.Abs(float64(in[i]) - float64(in[i+1]))
-		if diff < 1 || diff > 3 {
-			return false
-		}
-	}
-
-	return true
-}
-
 func day2CheckLevels(in []int) bool {
-	for i := 0; i < len(in); i++ {
-		var report []int
+	n := len(in)
+	if n <= 2 {
+		// Removing any one level always leaves at least one element.
+		return true
+	}
 
-		// Make a new slice with the item at element i missing.
-		for j := 0; j < len(in); j++ {
-			if i != j {
-				report = append(report, in[j])
+	// Reusable buffer.
+	buf := make([]int, n-1)
+
+	for skip := 0; skip < n; skip++ {
+		// Build buf = in with in[skip] removed
+		pos := 0
+		for i := 0; i < n; i++ {
+			if i == skip {
+				continue
 			}
+			buf[pos] = in[i]
+			pos++
 		}
 
-		if day2AllIncOrDec(report) && day2DiffOneToThree(report) {
+		if day2Safe(buf[:pos]) {
 			return true
 		}
 	}
 
 	return false
+}
+
+func day2Safe(report []int) bool {
+	if len(report) < 2 {
+		return true
+	}
+
+	var inc, dec bool
+
+	for i := 0; i < len(report)-1; i++ {
+		diff := report[i+1] - report[i]
+
+		if diff == 0 {
+			return false
+		}
+		if diff > 0 {
+			inc = true
+		} else {
+			dec = true
+		}
+
+		if diff < -3 || diff > 3 {
+			return false
+		}
+
+		if inc && dec {
+			return false
+		}
+	}
+
+	return true
 }
