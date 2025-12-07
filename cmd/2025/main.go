@@ -130,6 +130,47 @@ func run() error {
 	return nil
 }
 
+// runDayWithInput is a generic helper function that handles the common boilerplate
+// for running a day's puzzle: loading input, timing, and output formatting.
+// T is the input type (e.g., []string, string)
+// R1 is the return type for part 1 (e.g., int, int64)
+// R2 is the return type for part 2 (e.g., int, int64)
+func runDayWithInput[T any, R1 any, R2 any](
+	cfg *config,
+	loadInput func(loaders.Loader) (T, error),
+	part1 func(T) R1,
+	part2 func(T) R2,
+) error {
+	timingStart := time.Now()
+
+	instructions, err := loadInput(cfg.loader)
+	if err != nil {
+		return err
+	}
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeSetup, time.Since(timingStart))
+	}
+
+	timingPartOne := time.Now()
+	output.AnswerPart1(part1(instructions))
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeOne, time.Since(timingPartOne))
+	}
+
+	timingPartTwo := time.Now()
+	output.AnswerPart2(part2(instructions))
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeTwo, time.Since(timingPartTwo))
+	}
+
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeBoth, time.Since(timingPartOne))
+		output.TimeInfo(output.InfoTypeEverything, time.Since(timingStart))
+	}
+
+	return nil
+}
+
 func (cfg *config) runDay(day int) error {
 	output.Subtitle(day)
 

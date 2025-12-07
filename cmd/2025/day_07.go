@@ -6,39 +6,16 @@ import (
 	"strings"
 	"time"
 
-	"vaughany.com/advent_of_code_go/internal/output"
+	"vaughany.com/advent_of_code_go/internal/loaders"
 )
 
 func (cfg *config) day07() error {
-	timingStart := time.Now()
-
-	// 'instructions' can vary in type, depending on if we're dealing with ints, strings, bytes etc.
-	instructions, err := cfg.loader.GetStrings()
-	if err != nil {
-		return err
-	}
-	if cfg.timing {
-		output.TimeInfo(output.InfoTypeSetup, time.Since(timingStart))
-	}
-
-	timingPartOne := time.Now()
-	output.AnswerPart1(cfg.day07part1(instructions))
-	if cfg.timing {
-		output.TimeInfo(output.InfoTypeOne, time.Since(timingPartOne))
-	}
-
-	timingPartTwo := time.Now()
-	output.AnswerPart2(cfg.day07part2(instructions))
-	if cfg.timing {
-		output.TimeInfo(output.InfoTypeTwo, time.Since(timingPartTwo))
-	}
-
-	if cfg.timing {
-		output.TimeInfo(output.InfoTypeBoth, time.Since(timingPartOne))
-		output.TimeInfo(output.InfoTypeEverything, time.Since(timingStart))
-	}
-
-	return nil
+	return runDayWithInput(
+		cfg,
+		func(l loaders.Loader) ([]string, error) { return l.GetStrings() },
+		cfg.day07part1,
+		cfg.day07part2,
+	)
 }
 
 type cell struct {
