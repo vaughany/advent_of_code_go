@@ -24,6 +24,7 @@ type config struct {
 		startup  time.Time
 		finished time.Time
 	}
+	loader loaders.Loader
 }
 
 func main() {
@@ -120,32 +121,116 @@ func run() error {
 	return nil
 }
 
+// runDayWithInputSpecial handles the special case where part1 returns multiple values
+// and part2 needs both the input and the extra value(s) from part1.
+// T is the input type (e.g., []string)
+// R1 is the return type for part 1 (e.g., int)
+// E is the extra value type returned by part1 (e.g., []xy)
+// R2 is the return type for part 2 (e.g., int)
+func runDayWithInputSpecial[T any, R1 any, E any, R2 any](
+	cfg *config,
+	loadInput func(loaders.Loader) (T, error),
+	part1 func(T) (R1, E),
+	part2 func(T, E) R2,
+) error {
+	timingStart := time.Now()
+
+	instructions, err := loadInput(cfg.loader)
+	if err != nil {
+		return err
+	}
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeSetup, time.Since(timingStart))
+	}
+
+	timingPartOne := time.Now()
+	answerPt1, extra := part1(instructions)
+	output.AnswerPart1(answerPt1)
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeOne, time.Since(timingPartOne))
+	}
+
+	timingPartTwo := time.Now()
+	output.AnswerPart2(part2(instructions, extra))
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeTwo, time.Since(timingPartTwo))
+	}
+
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeBoth, time.Since(timingPartOne))
+		output.TimeInfo(output.InfoTypeEverything, time.Since(timingStart))
+	}
+
+	return nil
+}
+
+// runDayWithInput is a generic helper function that handles the common boilerplate
+// for running a day's puzzle: loading input, timing, and output formatting.
+// T is the input type (e.g., []string, string)
+// R1 is the return type for part 1 (e.g., int, int64)
+// R2 is the return type for part 2 (e.g., int, int64)
+func runDayWithInput[T any, R1 any, R2 any](
+	cfg *config,
+	loadInput func(loaders.Loader) (T, error),
+	part1 func(T) R1,
+	part2 func(T) R2,
+) error {
+	timingStart := time.Now()
+
+	instructions, err := loadInput(cfg.loader)
+	if err != nil {
+		return err
+	}
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeSetup, time.Since(timingStart))
+	}
+
+	timingPartOne := time.Now()
+	output.AnswerPart1(part1(instructions))
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeOne, time.Since(timingPartOne))
+	}
+
+	timingPartTwo := time.Now()
+	output.AnswerPart2(part2(instructions))
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeTwo, time.Since(timingPartTwo))
+	}
+
+	if cfg.timing {
+		output.TimeInfo(output.InfoTypeBoth, time.Since(timingPartOne))
+		output.TimeInfo(output.InfoTypeEverything, time.Since(timingStart))
+	}
+
+	return nil
+}
+
 func (cfg *config) runDay(day int) error {
 	output.Subtitle(day)
 
-	loader := loaders.NewLoader(cfg.efs, cfg.year, day, cfg.sample)
+	cfg.loader = loaders.NewLoader(cfg.efs, cfg.year, day, cfg.sample)
 
 	var err error
 
 	switch day {
 	case 1:
-		err = cfg.day01(loader)
+		err = cfg.day01()
 	case 2:
-		err = cfg.day02(loader)
+		err = cfg.day02()
 	case 3:
-		err = cfg.day03(loader)
+		err = cfg.day03()
 	case 4:
-		err = cfg.day04(loader)
+		err = cfg.day04()
 	case 5:
 		// err = cfg.day05(loader)
 		output.NotYetImplemented()
 	case 6:
-		err = cfg.day06(loader)
+		err = cfg.day06()
 	case 7:
 		// err = cfg.day07(loader)
 		output.NotYetImplemented()
 	case 8:
-		err = cfg.day08(loader)
+		err = cfg.day08()
 	case 9:
 		output.NotYetImplemented()
 	case 10:
