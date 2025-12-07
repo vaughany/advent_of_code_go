@@ -1,9 +1,10 @@
 package main
 
 import (
-	"math"
+	"fmt"
 	"slices"
 	"strconv"
+	"strings"
 
 	"vaughany.com/advent_of_code_go/internal/loaders"
 )
@@ -24,8 +25,13 @@ func (cfg *config) day01part1(instructions []string) (total int) {
 	slices.Sort(lefts)
 	slices.Sort(rights)
 
-	for j := 0; j < len(lefts); j++ {
-		total += int(math.Abs(float64(lefts[j]) - float64(rights[j])))
+	for i := range lefts {
+		diff := lefts[i] - rights[i]
+		if diff < 0 {
+			diff = -diff
+		}
+
+		total += diff
 	}
 
 	return
@@ -35,39 +41,41 @@ func (cfg *config) day01part1(instructions []string) (total int) {
 func (cfg *config) day01part2(instructions []string) (total int) {
 	lefts, rights := cfg.day01ProcessInput(instructions)
 
-	for _, left := range lefts {
-		count := 0
-		for _, right := range rights {
-			if left == right {
-				count++
-			}
-		}
+	// Count occurrences of each right-hand value
+	freq := make(map[int]int)
+	for _, r := range rights {
+		freq[r]++
+	}
 
-		total += left * count
+	// For each left, multiply by how often it appears on the right
+	for _, l := range lefts {
+		total += l * freq[l]
 	}
 
 	return total
 }
 
 func (cfg *config) day01ProcessInput(instructions []string) (lefts, rights []int) {
-	// Different slice indexes depending on sample or real puzzle input.
-	// Better than a regex here 'cos the input digits are a consistent length and separation throughout the input files.
-	leftEnd, rightStart := 1, 4
-	if !cfg.sample {
-		leftEnd, rightStart = 5, 8
-	}
+	lefts = make([]int, 0, len(instructions))
+	rights = make([]int, 0, len(instructions))
 
-	for _, ins := range instructions {
-		left, err := strconv.Atoi(ins[:leftEnd])
+	for _, line := range instructions {
+		parts := strings.Fields(line)
+		if len(parts) != 2 {
+			panic(fmt.Sprintf("invalid input line: %q", line))
+		}
+
+		left, err := strconv.Atoi(parts[0])
 		if err != nil {
 			panic(err)
 		}
+
+		right, err := strconv.Atoi(parts[1])
+		if err != nil {
+			panic(err)
+		}
+
 		lefts = append(lefts, left)
-
-		right, err := strconv.Atoi(ins[rightStart:])
-		if err != nil {
-			panic(err)
-		}
 		rights = append(rights, right)
 	}
 
