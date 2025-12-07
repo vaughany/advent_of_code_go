@@ -2,7 +2,6 @@ package main
 
 import (
 	"regexp"
-	"strconv"
 
 	"vaughany.com/advent_of_code_go/internal/loaders"
 )
@@ -24,14 +23,24 @@ func (cfg *config) day03part1(instructions []string) (total int) {
 		results := regex.FindAllStringSubmatch(ins, -1)
 
 		for _, res := range results {
-			a, _ := strconv.Atoi(res[1])
-			b, _ := strconv.Atoi(res[2])
+			a := atoi3(res[1])
+			b := atoi3(res[2])
 
 			total += a * b
 		}
 	}
 
 	return
+}
+
+func atoi3(s string) int {
+	n := 0
+
+	for i := 0; i < len(s); i++ {
+		n = n*10 + int(s[i]-'0')
+	}
+
+	return n
 }
 
 // 2024-03-2: 88802350
@@ -52,8 +61,8 @@ func (cfg *config) day03part2(instructions []string) (total int) {
 				do = false
 			case "mul":
 				if do {
-					a, _ := strconv.Atoi(res[1])
-					b, _ := strconv.Atoi(res[2])
+					a := atoi3(res[1])
+					b := atoi3(res[2])
 
 					total += a * b
 				}
