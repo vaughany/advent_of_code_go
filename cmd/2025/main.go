@@ -149,9 +149,9 @@ func (cfg *config) runDay(day int) error {
 	case 5:
 		err = cfg.day05()
 	case 6:
-		output.NotYetImplemented()
+		err = cfg.day06()
 	case 7:
-		output.NotYetImplemented()
+		err = cfg.day07()
 	case 8:
 		output.NotYetImplemented()
 	case 9:
